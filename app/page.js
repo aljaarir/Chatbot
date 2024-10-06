@@ -1,6 +1,5 @@
 'use client'
 
-
 import { Box, Button, Stack, TextField } from '@mui/material'
 import { useRef, useEffect, useState } from 'react'
 
@@ -8,23 +7,23 @@ export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I'm your personal AI assistant to help you prepare for software engineer jobs. How can I help you today?",
+      content: "Hi! I am Ryan Aljaari, a Michigan State University Student studying Computer Science.  How can I help you today?",
     },
   ])
   const [message, setMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const sendMessage = async () => {
-    if (!message.trim() || isLoading) return;
+    if (!message.trim() || isLoading) return
     setIsLoading(true)
-  
-    setMessage('')
+
     setMessages((messages) => [
       ...messages,
       { role: 'user', content: message },
       { role: 'assistant', content: '' },
     ])
-  
+    setMessage('')
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -33,14 +32,14 @@ export default function Home() {
         },
         body: JSON.stringify([...messages, { role: 'user', content: message }]),
       })
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
-  
+
       const reader = response.body.getReader()
       const decoder = new TextDecoder()
-  
+
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
@@ -74,12 +73,12 @@ export default function Home() {
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
-  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-useEffect(() => {
-  scrollToBottom()
-}, [messages])
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   return (
     <Box
@@ -89,6 +88,8 @@ useEffect(() => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
+      overflow="hidden"
+      color='white'
     >
       <Stack
         direction={'column'}
@@ -97,13 +98,14 @@ useEffect(() => {
         border="1px solid black"
         p={2}
         spacing={3}
+        justifyContent="space-between"
       >
         <Stack
           direction={'column'}
           spacing={2}
           flexGrow={1}
           overflow="auto"
-          maxHeight="100%"
+          maxHeight="80%" // Reduce maxHeight to prevent overlap with input field
         >
           {messages.map((message, index) => (
             <Box
@@ -122,27 +124,41 @@ useEffect(() => {
                 color="white"
                 borderRadius={16}
                 p={3}
+                maxWidth="75%" // Limit message width for readability
               >
                 {message.content}
               </Box>
             </Box>
           ))}
+          <div ref={messagesEndRef} />
         </Stack>
-        <div ref={messagesEndRef} />
-        <Stack direction={'row'} spacing={2}>
-          <TextField
+        <Stack direction={'row'} spacing={2} alignItems="center">
+        <TextField
             label="Message"
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={isLoading}
+            variant="outlined"
+            InputProps={{
+              style: {
+                color: 'white',  // Ensure text is visible in dark mode
+                backgroundColor: '#2b2b2b',  // Lighter background for contrast
+              },
+            }}
+            InputLabelProps={{
+              style: {
+                color: 'gray', // Lighten the label color for visibility
+              },
+            }}
           />
-          <Button 
-            variant="contained" 
+
+          <Button
+            variant="contained"
             onClick={sendMessage}
             disabled={isLoading}
-            >
+          >
             {isLoading ? 'Sending...' : 'Send'}
           </Button>
         </Stack>
