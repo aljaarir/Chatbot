@@ -1,13 +1,13 @@
 'use client'
 
-import { Box, Button, Stack, TextField } from '@mui/material'
+import { Box, Button, Stack, TextField, Typography } from '@mui/material'
 import { useRef, useEffect, useState } from 'react'
 
 export default function Home() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hi! I am Ryan Aljaari, a Michigan State University Student studying Computer Science.  How can I help you today?",
+      content: "Hi! I am Ryan Aljaari, a Michigan State University student studying Computer Science. How can I help you today?",
     },
   ])
   const [message, setMessage] = useState('')
@@ -88,15 +88,21 @@ export default function Home() {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      overflow="hidden"
-      color='white'
+      sx={{
+        background: 'linear-gradient(135deg, #E0C3FC 0%, #8EC5FC 100%)',
+        padding: 2,
+      }}
     >
       <Stack
         direction={'column'}
-        width="500px"
-        height="700px"
-        border="1px solid black"
-        p={2}
+        width="90%"
+        maxWidth="600px"
+        height="90%"
+        maxHeight="800px"
+        borderRadius={3}
+        boxShadow="0px 4px 20px rgba(0, 0, 0, 0.1)"
+        bgcolor="white"
+        p={3}
         spacing={3}
         justifyContent="space-between"
       >
@@ -105,7 +111,17 @@ export default function Home() {
           spacing={2}
           flexGrow={1}
           overflow="auto"
-          maxHeight="80%" // Reduce maxHeight to prevent overlap with input field
+          maxHeight="80%"
+          sx={{
+            paddingRight: 2,
+            '&::-webkit-scrollbar': {
+              width: '8px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#424769',
+              borderRadius: '4px',
+            },
+          }}
         >
           {messages.map((message, index) => (
             <Box
@@ -118,46 +134,70 @@ export default function Home() {
               <Box
                 bgcolor={
                   message.role === 'assistant'
-                    ? 'primary.main'
-                    : 'secondary.main'
+                    ? '#f0f0f0' // Light grey for assistant messages
+                    : '#6C5E82' // Darker color for user messages
                 }
-                color="white"
-                borderRadius={16}
-                p={3}
-                maxWidth="75%" // Limit message width for readability
+                color={message.role === 'assistant' ? 'black' : 'white'}
+                borderRadius={2}
+                p={2}
+                maxWidth="70%"
+                sx={{
+                  boxShadow: '0px 2px 12px rgba(0, 0, 0, 0.1)',
+                }}
               >
-                {message.content}
+                <Typography variant="body1">
+                  {message.content}
+                </Typography>
               </Box>
             </Box>
           ))}
           <div ref={messagesEndRef} />
         </Stack>
         <Stack direction={'row'} spacing={2} alignItems="center">
-        <TextField
-            label="Message"
+          <TextField
+            label="Type your message..."
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             disabled={isLoading}
             variant="outlined"
+            sx={{
+              backgroundColor: 'white',
+              borderRadius: 2,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#6C5E82',
+                },
+                '&:hover fieldset': {
+                  borderColor: '#424769',
+                },
+              },
+            }}
             InputProps={{
               style: {
-                color: 'white',  // Ensure text is visible in dark mode
-                backgroundColor: '#2b2b2b',  // Lighter background for contrast
+                color: 'black',
               },
             }}
             InputLabelProps={{
               style: {
-                color: 'gray', // Lighten the label color for visibility
+                color: 'gray',
               },
             }}
           />
-
           <Button
             variant="contained"
             onClick={sendMessage}
             disabled={isLoading}
+            sx={{
+              backgroundColor: '#6C5E82',
+              color: 'white',
+              fontWeight: 'bold',
+              '&:hover': {
+                backgroundColor: '#424769',
+              },
+              minWidth: '100px',
+            }}
           >
             {isLoading ? 'Sending...' : 'Send'}
           </Button>
